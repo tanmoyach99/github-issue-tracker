@@ -4,115 +4,133 @@ const loadAllIssues = async () => {
   );
   const issues = await res.json();
   displayAllIssue(issues.data);
+  setupFilters(issues.data);
 };
 
-const displayAllIssue = (data) => {
-  console.log(data);
+const displayAllIssue = (issues) => {
   const allIssues = document.getElementById("all-issues");
+  const totalIssue = document.getElementById("total-issue");
+  totalIssue.innerHTML = `${issues.length} issues`;
   allIssues.innerHTML = "";
-  data.forEach((issue) => {
+
+  issues.forEach((issue) => {
     const statusIcon =
       issue.status === "open"
-        ? '<img src="./assets/Open-Status.png" alt="open" class="w-6 h-6" />'
-        : '<img src="./assets/Closed- Status.png" alt="closed" class="w-6 h-6" />';
+        ? '<img src="./assets/Open-Status.png" class="w-6 h-6" />'
+        : '<img src="./assets/Closed-Status.png" class="w-6 h-6" />';
+
     const topBarClass = issue.status === "open" ? "bg-success" : "bg-primary";
-    const card = document.createElement("div");
+
     const priorityClass =
       issue.priority === "high"
         ? "text-red-500 bg-red-200"
         : issue.priority === "medium"
           ? "text-orange-500 bg-orange-200"
-          : "text-black bg-gray-200";
+          : "text-gray-700 bg-gray-200";
 
     const labelBadges = issue.labels
       .map((label) => {
         const labelClass =
           label === "bug"
-            ? "text-red-500 bg-red-200 border-none"
+            ? "text-red-500 bg-red-200"
             : label === "help wanted"
-              ? "text-orange-500 bg-orange-200 border-none"
-              : "text-green-500 bg-green-200 border-none";
+              ? "text-orange-500 bg-orange-200"
+              : "text-green-500 bg-green-200";
 
         const labelIcons =
           label === "bug"
             ? '<i class="fa-solid fa-bug"></i>'
             : label === "help wanted"
-              ? '<i class="fa-solid fa-gear"></i>'
+              ? '<i class="fa-solid fa-circle-question"></i>'
               : '<i class="fa-solid fa-wand-magic-sparkles"></i>';
 
         return `
-      <span class="badge ${labelClass} text-xs flex items-center gap-1">
-        ${labelIcons} ${label.toUpperCase()}
-      </span>
-    `;
+          <span class="px-2 py-1 rounded-full text-xs flex items-center gap-1 ${labelClass}">
+            ${labelIcons} ${label.toUpperCase()}
+          </span>
+        `;
       })
       .join("");
+
+    const card = document.createElement("div");
     card.className = "h-full";
 
     card.innerHTML = `
-  <div class="card h-full flex flex-col bg-base-100 shadow-md border border-base-200">
+      <div class="card h-full flex flex-col bg-base-100 shadow-md border border-base-200">
 
-    <!-- Top Border -->
-    <div class="${topBarClass} rounded-t-lg h-1"></div>
+        <div class="${topBarClass} h-1 rounded-t-lg"></div>
 
-    <div class="card-body flex flex-col gap-3 h-full">
+        <div class="card-body flex flex-col gap-3 h-full">
 
-      <!-- Header -->
-      <div class="flex justify-between items-center">
-        <div class="w-8 h-8 rounded-full border-2 ${
-          issue.status === "open" ? "border-success" : "border-primary"
-        } flex items-center justify-center">
-          ${statusIcon}
+          <div class="flex justify-between items-center">
+            <div class="w-8 h-8 rounded-full border-2 ${
+              issue.status === "open" ? "border-success" : "border-primary"
+            } flex items-center justify-center">
+              ${statusIcon}
+            </div>
+
+            <span class="px-3 py-1 text-xs font-semibold uppercase rounded-full ${priorityClass}">
+              ${issue.priority}
+            </span>
+          </div>
+
+          <div class="flex-grow">
+            <h2 class="card-title text-base">${issue.title}</h2>
+            <p class="text-sm text-base-content/70 line-clamp-2">
+              ${issue.description}
+            </p>
+
+            <div class="flex flex-wrap gap-2 mt-2">
+              ${labelBadges}
+            </div>
+          </div>
+
+          <div class="divider my-1"></div>
+
+          <div class="text-xs flex justify-between mt-auto">
+            <span>#${issue.id} by ${issue.author}</span>
+            <span>${new Date(issue.createdAt).toLocaleDateString()}</span>
+          </div>
+
+          <div class="text-xs flex justify-between">
+            <span>${issue.assignee || "No Assignee"}</span>
+            <span>updated: ${new Date(issue.updatedAt).toLocaleDateString()}</span>
+          </div>
+
         </div>
-
-        <span class="px-3 py-1 text-xs font-semibold uppercase rounded-full ${priorityClass}">
-          ${issue.priority}
-        </span>
       </div>
+    `;
 
-      <!-- Content Grow Area -->
-      <div class="flex-grow">
-
-        <!-- Title -->
-        <h2 class="card-title text-base font-semibold leading-snug">
-          ${issue.title}
-        </h2>
-
-        <!-- Description -->
-        <p class="text-sm text-base-content/70 line-clamp-2">
-          ${issue.description}
-        </p>
-
-        <!-- Labels -->
-        <div class="flex flex-wrap gap-2 mt-2 font-semibold">
-          ${labelBadges}
-        </div>
-
-      </div>
-
-      <!-- Divider -->
-      <div class="divider my-1"></div>
-
-      <!-- Footer -->
-      <div class="text-xs text-base-content/60 flex justify-between mt-auto">
-        <span>#${issue.id} by ${issue.author}</span>
-        <span>${new Date(issue.createdAt).toLocaleDateString()}</span>
-      </div>
-      <div class="text-xs text-base-content/60 flex justify-between mt-auto">
-        <span>${issue.assignee ? issue.assignee : " No Assignee"}</span>
-        <span>updated:${new Date(issue.updatedAt).toLocaleDateString()}</span>
-      </div>
-
-    </div>
-  </div>
-`;
     allIssues.append(card);
   });
 };
-const displaySpecific = async () => {
+
+const setupFilters = (data) => {
   const all = document.getElementById("all");
   const open = document.getElementById("open");
   const closed = document.getElementById("closed");
+
+  const setActive = (btn) => {
+    all.classList.remove("btn-primary");
+    open.classList.remove("btn-primary");
+    closed.classList.remove("btn-primary");
+    btn.classList.add("btn-primary");
+  };
+
+  all.addEventListener("click", () => {
+    setActive(all);
+    displayAllIssue(data);
+  });
+
+  open.addEventListener("click", () => {
+    setActive(open);
+    displayAllIssue(data.filter((i) => i.status === "open"));
+  });
+
+  closed.addEventListener("click", () => {
+    setActive(closed);
+    displayAllIssue(data.filter((i) => i.status === "closed"));
+  });
 };
 
 loadAllIssues();
