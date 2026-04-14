@@ -56,7 +56,7 @@ const displayAllIssue = (issues) => {
     card.className = "h-full";
 
     card.innerHTML = `
-      <div class="card h-full flex flex-col bg-base-100 shadow-md border border-base-200">
+      <div class="card h-full flex flex-col bg-base-100 shadow-md border border-base-200" onclick=openModal(${issue.id})>
 
         <div class="${topBarClass} h-1 rounded-t-lg"></div>
 
@@ -132,5 +132,120 @@ const setupFilters = (data) => {
     displayAllIssue(data.filter((i) => i.status === "closed"));
   });
 };
+
+const openModal = async (id) => {
+  const url = `https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const issue = data.data;
+
+  const modal = document.getElementById("issue_modal");
+
+  const priorityClass =
+    issue.priority === "high"
+      ? "badge-error"
+      : issue.priority === "medium"
+        ? "badge-warning"
+        : "badge-ghost";
+
+  const labels = issue.labels
+    .map((label) => {
+      const labelClass =
+        label === "bug"
+          ? "text-red-500 bg-red-200 "
+          : label === "help wanted"
+            ? "text-orange-500 bg-orange-200"
+            : "text-green-500 bg-green-200";
+
+      const icon =
+        label === "bug"
+          ? `<i class="fa-solid fa-bug"></i>`
+          : label === "help wanted"
+            ? `<i class="fa-solid fa-circle-question"></i>`
+            : `<i class="fa-solid fa-wand-magic-sparkles"></i>`;
+
+      return `<span class="badge ${labelClass} gap-1">${icon} ${label}</span>`;
+    })
+    .join("");
+
+  modal.innerHTML = `
+    <input type="checkbox" id="issue-modal" class="modal-toggle" checked />
+
+    <div class="modal">
+      <div class="modal-box max-w-2xl">
+
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-xl font-bold">${issue.title}</h2>
+          <span class="badge badge-success">${issue.status}</span>
+        </div>
+
+        <!-- Meta -->
+        <p class="text-sm text-gray-500 mb-3">
+          Opened by <strong>${issue.author}</strong> • ${new Date(
+            issue.createdAt,
+          ).toLocaleDateString()}
+        </p>
+
+        <!-- Labels -->
+        <div class="flex gap-2 mb-4 flex-wrap">
+          ${labels}
+        </div>
+
+        <!-- Description -->
+        <p class="text-gray-600 mb-6">
+          ${issue.description}
+        </p>
+
+        <!-- Info -->
+        <div class="bg-base-200 p-4 rounded-lg flex justify-between mb-6">
+          <div>
+            <p class="text-sm text-gray-500">Assignee</p>
+            <p class="font-semibold">${issue.assignee || "Unassigned"}</p>
+          </div>
+
+          <div>
+            <p class="text-sm text-gray-500">Priority</p>
+            <span class="badge ${priorityClass}">
+              ${issue.priority}
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="modal-action">
+          <label for="issue-modal" class="btn btn-primary">
+            Close
+          </label>
+        </div>
+
+      </div>
+    </div>
+  `;
+};
+
+const searchInput = document.getElementById("search-input");
+const searchBtn = document.getElementById("search");
+const inputValue = searchInput.value;
+
+const searchIssues = async (value) => {
+  const res = await fetch(
+    `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${valu ? value : null}`,
+  );
+  const data = res.json();
+  console.log(data);
+};
+
+searchBtn.addEventListener("click", async function () {
+  const searchInput = document.getElementById("search-input");
+
+  const inputValue = searchInput.value;
+  const res = await fetch(
+    `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${inputValue}`,
+  );
+  const data = await res.json();
+  const issues = data.data;
+  displayAllIssue(issues);
+});
 
 loadAllIssues();

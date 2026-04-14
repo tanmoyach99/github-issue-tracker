@@ -61,11 +61,13 @@
       <path d="m21 21-4.3-4.3"></path>
     </g>
   </svg>
-  <input type="search" class="grow" placeholder="Search" />
+  <input type="search" class="grow" placeholder="Search" id="search-input"/>
+    
 
 
 </label>
-    <button class="btn btn-primary">+ New Issue</button>
+<button class="btn btn-primary" id="search">Search</button>
+  
     <div class="dropdown dropdown-end">
   
    
@@ -73,12 +75,28 @@
         tabindex="-1"
         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
         <li>
-          <a class="justify-between">
-            Profile
-            <span class="badge">New</span>
-          </a>
+         <div class="flex-1 flex items-center">
+    <img src="./assets/github-logo.png" class="w-16"alt="">
+    <a class="btn btn-ghost text-3xl font-bold">Github Issue Tracker</a>
+  </div>
         </li>
-        <li><a>Settings</a></li>
+        <li> <label class="input">
+  <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <g
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      stroke-width="2.5"
+      fill="none"
+      stroke="currentColor"
+    >
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.3-4.3"></path>
+    </g>
+  </svg>
+  <input type="search" class="grow" placeholder="Search" />
+
+
+</label></li>
         <li><a>Logout</a></li>
       </ul>
     </div>
@@ -121,6 +139,23 @@
    </section>
     
     </section>
+   <dialog id="issue_modal" class="modal">
+  <div class="modal-box p-0 bg-base-100 relative">
+
+    <button id="close-modal"
+      class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10">
+      ✕
+    </button>
+
+    <div id="modal-content"></div>
+
+  </div>
+ 
+
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
   </body>
   <script src="./login.js"></script>
   <script src="./github-issue.js"></script>
