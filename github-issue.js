@@ -1,10 +1,20 @@
 const loadAllIssues = async () => {
+  showLoader();
+  hideEmpty();
+
   const res = await fetch(
-    "https://phi-lab-server.vercel.app/api/v1/lab/issues ",
+    "https://phi-lab-server.vercel.app/api/v1/lab/issues",
   );
   const issues = await res.json();
-  displayAllIssue(issues.data);
-  setupFilters(issues.data);
+
+  hideLoader();
+
+  if (!issues.data.length) {
+    showEmpty();
+  } else {
+    displayAllIssue(issues.data);
+    setupFilters(issues.data);
+  }
 };
 
 const displayAllIssue = (issues) => {
@@ -12,6 +22,13 @@ const displayAllIssue = (issues) => {
   const totalIssue = document.getElementById("total-issue");
   totalIssue.innerHTML = `${issues.length} issues`;
   allIssues.innerHTML = "";
+
+  if (issues.length === 0) {
+    showEmpty();
+    return;
+  } else {
+    hideEmpty();
+  }
 
   issues.forEach((issue) => {
     const statusIcon =
@@ -229,11 +246,18 @@ const searchBtn = document.getElementById("search");
 const inputValue = searchInput.value;
 
 const searchIssues = async (value) => {
+  showLoader();
+  hideEmpty();
   const res = await fetch(
     `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${valu ? value : null}`,
   );
-  const data = res.json();
-  console.log(data);
+  hideLoader();
+
+  if (!issues.length) {
+    showEmpty();
+  } else {
+    displayAllIssue(issues);
+  }
 };
 
 searchBtn.addEventListener("click", async function () {
@@ -247,5 +271,20 @@ searchBtn.addEventListener("click", async function () {
   const issues = data.data;
   displayAllIssue(issues);
 });
+const showLoader = () => {
+  document.getElementById("loader").classList.remove("hidden");
+};
+
+const hideLoader = () => {
+  document.getElementById("loader").classList.add("hidden");
+};
+
+const showEmpty = () => {
+  document.getElementById("empty-state").classList.remove("hidden");
+};
+
+const hideEmpty = () => {
+  document.getElementById("empty-state").classList.add("hidden");
+};
 
 loadAllIssues();

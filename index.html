@@ -131,6 +131,17 @@
         </div>
       </div> 
     </div>
+    <!-- Loader -->
+<div id="loader" class="hidden flex justify-center my-10">
+  <span class="loading loading-spinner loading-lg text-primary"></span>
+</div>
+
+<!-- Empty State -->
+<div id="empty-state" class="hidden text-center my-10 text-gray-500">
+  <p class="text-lg font-semibold">No issues found 😕</p>
+  <p class="text-sm">Try a different search or filter</p>
+</div>
+<!-- all issues -->
     
 
     <div id="all-issues" class="grid gap-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1">
@@ -139,6 +150,7 @@
    </section>
     
     </section>
+    <!-- modal -->
    <dialog id="issue_modal" class="modal">
   <div class="modal-box p-0 bg-base-100 relative">
 
