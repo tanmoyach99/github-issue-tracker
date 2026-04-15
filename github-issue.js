@@ -122,6 +122,8 @@ const displayAllIssue = (issues) => {
   });
 };
 
+// ...................................filtering based on status..........................................................//
+
 const setupFilters = (data) => {
   const all = document.getElementById("all");
   const open = document.getElementById("open");
@@ -149,7 +151,7 @@ const setupFilters = (data) => {
     displayAllIssue(data.filter((i) => i.status === "closed"));
   });
 };
-
+//.................................modal........................................//
 const openModal = async (id) => {
   const url = `https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`;
   const res = await fetch(url);
@@ -240,51 +242,44 @@ const openModal = async (id) => {
     </div>
   `;
 };
-
+//..............................................search function.............................///
 const searchInput = document.getElementById("search-input");
 const searchBtn = document.getElementById("search");
 const inputValue = searchInput.value;
 
-const searchIssues = async (value) => {
+searchBtn.addEventListener("click", async function () {
+  const searchInput = document.getElementById("search-input");
   showLoader();
   hideEmpty();
+
+  const inputValue = searchInput.value;
   const res = await fetch(
-    `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${valu ? value : null}`,
+    `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${inputValue}`, //search api//
   );
   hideLoader();
-
+  const data = await res.json();
+  const issues = data.data;
   if (!issues.length) {
     showEmpty();
   } else {
     displayAllIssue(issues);
   }
-};
-
-searchBtn.addEventListener("click", async function () {
-  const searchInput = document.getElementById("search-input");
-
-  const inputValue = searchInput.value;
-  const res = await fetch(
-    `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${inputValue}`,
-  );
-  const data = await res.json();
-  const issues = data.data;
-  displayAllIssue(issues);
 });
+//..........................................................loader issue.............................................................//
 const showLoader = () => {
-  document.getElementById("loader").classList.remove("hidden");
+  document.getElementById("loader").classList.remove("hidden"); //loader shown initially//
 };
 
 const hideLoader = () => {
-  document.getElementById("loader").classList.add("hidden");
+  document.getElementById("loader").classList.add("hidden"); //loader hidden after fetching issues from api//
 };
 
 const showEmpty = () => {
-  document.getElementById("empty-state").classList.remove("hidden");
+  document.getElementById("empty-state").classList.remove("hidden"); //show some message based on founding//
 };
 
 const hideEmpty = () => {
-  document.getElementById("empty-state").classList.add("hidden");
+  document.getElementById("empty-state").classList.add("hidden"); //when issue has been found//
 };
 
 loadAllIssues();
