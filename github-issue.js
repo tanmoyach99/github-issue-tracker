@@ -270,6 +270,7 @@ searchBtn.addEventListener("click", async function () {
     } else {
       displayAllIssue(issues);
     }
+    searchInput.value = "";
   } catch (error) {
     console.error("Search error:", error);
     showEmpty();
