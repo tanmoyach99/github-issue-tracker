@@ -245,24 +245,34 @@ const openModal = async (id) => {
 //..............................................search function.............................///
 const searchInput = document.getElementById("search-input");
 const searchBtn = document.getElementById("search");
-const inputValue = searchInput.value;
 
 searchBtn.addEventListener("click", async function () {
-  const searchInput = document.getElementById("search-input");
+  const inputValue = searchInput.value.trim(); // get value on click
+
+  if (!inputValue) return; // prevent empty search
+
   showLoader();
   hideEmpty();
 
-  const inputValue = searchInput.value;
-  const res = await fetch(
-    `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${inputValue}`, //search api//
-  );
-  hideLoader();
-  const data = await res.json();
-  const issues = data.data;
-  if (!issues.length) {
+  try {
+    const res = await fetch(
+      `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${inputValue}`,
+    );
+
+    const data = await res.json();
+    const issues = data.data;
+    document.getElementById("all-issues").innerHTML = "";
+
+    if (!issues.length) {
+      showEmpty();
+    } else {
+      displayAllIssue(issues);
+    }
+  } catch (error) {
+    console.error("Search error:", error);
     showEmpty();
-  } else {
-    displayAllIssue(issues);
+  } finally {
+    hideLoader();
   }
 });
 //..........................................................loader issue.............................................................//
