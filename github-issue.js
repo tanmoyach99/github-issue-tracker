@@ -3,24 +3,25 @@ const loadAllIssues = async () => {
   hideEmpty();
 
   const res = await fetch(
-    "https://phi-lab-server.vercel.app/api/v1/lab/issues",
+    "https://phi-lab-server.vercel.app/api/v1/lab/issues", //all issues api
   );
   const issues = await res.json();
 
   hideLoader();
 
   if (!issues.data.length) {
-    showEmpty();
+    showEmpty(); //showing empty message
   } else {
-    displayAllIssue(issues.data);
-    setupFilters(issues.data);
+    displayAllIssue(issues.data); //showing all issue
+    setupFilters(issues.data); // filtering on status
   }
 };
 
 const displayAllIssue = (issues) => {
   const allIssues = document.getElementById("all-issues");
   const totalIssue = document.getElementById("total-issue");
-  totalIssue.innerHTML = `${issues.length} issues`;
+  totalIssue.innerHTML =
+    issues.length === 0 ? "0 issues found" : `${issues.length} issues`;
   allIssues.innerHTML = "";
 
   if (issues.length === 0) {
@@ -34,16 +35,16 @@ const displayAllIssue = (issues) => {
     const statusIcon =
       issue.status === "open"
         ? '<img src="./assets/Open-Status.png" class="w-6 h-6" />'
-        : '<img src="./assets/Closed-Status.png" class="w-6 h-6" />';
+        : '<img src="./assets/Closed-Status.png" class="w-6 h-6" />'; //conditional card header image
 
-    const topBarClass = issue.status === "open" ? "bg-success" : "bg-primary";
+    const topBarClass = issue.status === "open" ? "bg-success" : "bg-primary"; //conditional top border
 
     const priorityClass =
       issue.priority === "high"
         ? "text-red-500 bg-red-200"
         : issue.priority === "medium"
           ? "text-orange-500 bg-orange-200"
-          : "text-gray-700 bg-gray-200";
+          : "text-gray-700 bg-gray-200"; //condition priority
 
     const labelBadges = issue.labels
       .map((label) => {
@@ -65,7 +66,7 @@ const displayAllIssue = (issues) => {
           <span class="px-2 py-1 rounded-full text-xs flex items-center gap-1 ${labelClass}">
             ${labelIcons} ${label.toUpperCase()}
           </span>
-        `;
+        `; //conditional labels and text and badges color
       })
       .join("");
 
@@ -140,12 +141,12 @@ const setupFilters = (data) => {
     setActive(all);
     displayAllIssue(data);
   });
-
+  //when open clicked
   open.addEventListener("click", () => {
     setActive(open);
     displayAllIssue(data.filter((i) => i.status === "open"));
   });
-
+  //when closed clicked
   closed.addEventListener("click", () => {
     setActive(closed);
     displayAllIssue(data.filter((i) => i.status === "closed"));
@@ -262,6 +263,7 @@ searchBtn.addEventListener("click", async function () {
     const data = await res.json();
     const issues = data.data;
     document.getElementById("all-issues").innerHTML = "";
+    document.getElementById("total-issue").innerHTML = "no issues found ";
 
     if (!issues.length) {
       showEmpty();
