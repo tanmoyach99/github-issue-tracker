@@ -1,20 +1,27 @@
-console.log("js connected");
-
 const userName = document.getElementById("userName");
 const password = document.getElementById("password");
 const submit = document.getElementById("submit");
 
+const loginSection = document.getElementById("login");
+const githubSection = document.getElementById("github");
+
 submit.addEventListener("click", function (e) {
   e.preventDefault();
-  if (
-    userName.value.trim().toLowerCase() === "admin" &&
-    password.value.trim() === "admin123"
-  ) {
-    console.log(password.value);
-    document.getElementById("login").style.display = "none";
-    document.getElementById("github").style.display = "block";
+
+  const usernameValue = userName.value.trim().toLowerCase();
+  const passwordValue = password.value.trim();
+
+  if (usernameValue === "admin" && passwordValue === "admin123") {
+    // success login
+    loginSection.classList.add("hidden");
+    githubSection.classList.remove("hidden");
+
+    console.log("Login successful");
   } else {
-    document.getElementById("login").style.display = "block";
-    document.getElementById("github").style.display = "none";
+    // failed login
+    alert("Invalid username or password");
+
+    loginSection.classList.remove("hidden");
+    githubSection.classList.add("hidden");
   }
 });
